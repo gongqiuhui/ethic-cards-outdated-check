@@ -327,6 +327,7 @@
     }
     .card-dot.red { background: #f5222d; }
     .card-dot.orange { background: #fa8c16; }
+    .card-dot.green { background: #52c41a; color: #fff; }
     .reason-red { color: var(--danger); }
     .icon-actions {
       display: flex;
@@ -683,7 +684,7 @@
                   <td>10001</td>
                   <td><a href="#">Gazy Fghh</a></td>
                   <td>gzojyfjqmh@gmail.com</td>
-                  <td><span class="card-dot red">1</span></td>
+                  <td><span class="card-dot red" data-original-color="red">1</span></td>
                   <td class="reason-red">AI writing</td>
                   <td>2021-02-06</td>
                   <td>2026-02-06</td>
@@ -712,7 +713,7 @@
                   <td>10002</td>
                   <td><a href="#">Peter Lynch</a></td>
                   <td>peter.lynch@gmail.com</td>
-                  <td><span class="card-dot orange">1</span></td>
+                  <td><span class="card-dot orange" data-original-color="orange">1</span></td>
                   <td class="reason-red">collaborated with papermiller, potential authorship for sale</td>
                   <td>2021-02-06</td>
                   <td>2026-02-06</td>
@@ -904,6 +905,16 @@
       const trigger = root.querySelector('.multi-select-trigger');
       const panel = root.querySelector('.multi-select-panel');
       const inputs = Array.from(root.querySelectorAll('input[type="checkbox"]'));
+      const outdatedValue = 'Ethics Green Card（Outdated）';
+
+      function applyOutdatedCardStyles(selected) {
+        const showOutdated = selected.includes(outdatedValue);
+        document.querySelectorAll('.card-dot').forEach((dot) => {
+          const original = dot.getAttribute('data-original-color') || 'red';
+          dot.classList.remove('red', 'orange', 'green');
+          dot.classList.add(showOutdated ? 'green' : original);
+        });
+      }
 
       function render() {
         const selected = inputs.filter((input) => input.checked).map((input) => input.value);
@@ -913,29 +924,30 @@
           placeholder.className = 'multi-select-placeholder';
           placeholder.textContent = 'Please select...';
           trigger.appendChild(placeholder);
-          return;
-        }
-        selected.forEach((value) => {
-          const tag = document.createElement('span');
-          tag.className = 'multi-select-tag';
-          const label = document.createElement('span');
-          label.textContent = value;
-          const remove = document.createElement('button');
-          remove.type = 'button';
-          remove.setAttribute('aria-label', 'Remove ' + value);
-          remove.textContent = '×';
-          remove.addEventListener('click', (event) => {
-            event.stopPropagation();
-            const match = inputs.find((input) => input.value === value);
-            if (match) {
-              match.checked = false;
-              render();
-            }
+        } else {
+          selected.forEach((value) => {
+            const tag = document.createElement('span');
+            tag.className = 'multi-select-tag';
+            const label = document.createElement('span');
+            label.textContent = value;
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.setAttribute('aria-label', 'Remove ' + value);
+            remove.textContent = '×';
+            remove.addEventListener('click', (event) => {
+              event.stopPropagation();
+              const match = inputs.find((input) => input.value === value);
+              if (match) {
+                match.checked = false;
+                render();
+              }
+            });
+            tag.appendChild(label);
+            tag.appendChild(remove);
+            trigger.appendChild(tag);
           });
-          tag.appendChild(label);
-          tag.appendChild(remove);
-          trigger.appendChild(tag);
-        });
+        }
+        applyOutdatedCardStyles(selected);
       }
 
       function setOpen(open) {
