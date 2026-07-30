@@ -156,25 +156,6 @@
       padding: 12px 16px 16px;
     }
 
-    .status-row {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .chip {
-      border: 1px solid var(--border);
-      background: var(--white);
-      padding: 4px 12px;
-      border-radius: 2px;
-      font-size: 13px;
-      color: var(--text);
-    }
-    .chip.active {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
     .filters {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -199,6 +180,96 @@
     }
     .field.span-2 { grid-column: span 2; }
     .field textarea { height: 64px; resize: none; }
+
+    .multi-select {
+      position: relative;
+      width: 100%;
+    }
+    .multi-select-trigger {
+      min-height: 32px;
+      width: 100%;
+      border: 1px solid #d9d9d9;
+      border-radius: 2px;
+      padding: 2px 28px 2px 4px;
+      background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238c8c8c' d='M2.5 4.5L6 8l3.5-3.5'/%3E%3C/svg%3E") no-repeat right 10px center;
+      cursor: pointer;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+    }
+    .multi-select.open .multi-select-trigger {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+    .multi-select-placeholder {
+      color: var(--muted);
+      padding: 0 7px;
+      line-height: 26px;
+      font-size: 14px;
+    }
+    .multi-select-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      max-width: 100%;
+      height: 24px;
+      padding: 0 6px;
+      background: #f5f5f5;
+      border: 1px solid #f0f0f0;
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 12px;
+      line-height: 22px;
+    }
+    .multi-select-tag span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .multi-select-tag button {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 1;
+      padding: 0;
+    }
+    .multi-select-tag button:hover { color: var(--text); }
+    .multi-select-panel {
+      display: none;
+      position: absolute;
+      z-index: 20;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      max-height: 240px;
+      overflow: auto;
+      background: var(--white);
+      border: 1px solid #d9d9d9;
+      border-radius: 2px;
+      box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08);
+      padding: 4px 0;
+    }
+    .multi-select.open .multi-select-panel { display: block; }
+    .multi-select-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .multi-select-option:hover { background: #f5f5f5; }
+    .multi-select-option input {
+      margin-top: 3px;
+      width: auto;
+      height: auto;
+      flex-shrink: 0;
+    }
     .actions-row {
       display: flex;
       gap: 8px;
@@ -539,13 +610,6 @@
 
         <div class="content">
           <div class="card">
-            <div class="status-row">
-              <span class="chip">All (1000)</span>
-              <span class="chip">Normal (1000)</span>
-              <span class="chip active">Pending outdated (100)</span>
-              <span class="chip">Outdated (10)</span>
-            </div>
-
             <div class="filters">
               <div class="field">
                 <label>Email</label>
@@ -565,7 +629,26 @@
               </div>
               <div class="field span-2">
                 <label>Cards</label>
-                <select><option>Please select...</option></select>
+                <div class="multi-select" id="cardsSelect">
+                  <div class="multi-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+                    <span class="multi-select-placeholder">Please select...</span>
+                  </div>
+                  <div class="multi-select-panel" role="listbox" aria-multiselectable="true">
+                    <label class="multi-select-option"><input type="checkbox" value="Ethic Yellow Card" />Ethic Yellow Card</label>
+                    <label class="multi-select-option"><input type="checkbox" value="Ethic Red Card" />Ethic Red Card</label>
+                    <label class="multi-select-option"><input type="checkbox" value="Ethic Gray Card" />Ethic Gray Card</label>
+                    <label class="multi-select-option"><input type="checkbox" value="Ethics Red Card (Escalated from Yellow)" />Ethics Red Card (Escalated from Yellow)</label>
+                    <label class="multi-select-option"><input type="checkbox" value="Ethics Green Card（Outdated）" />Ethics Green Card（Outdated）</label>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label>Pending Outdated</label>
+                <select>
+                  <option>Please select...</option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
               </div>
               <div class="field span-2">
                 <label>Reason</label>
@@ -741,7 +824,7 @@
               </svg>
             </button>
             <div class="collapse-body">
-              <div class="text-red">This scholar was marked "Retain Ethic Card" by XXX on 12 February 2026 (within 3 years)</div>
+              <div class="text-red">This scholar was marked "Retain Ethic Card" by XXX on 12 February 2026</div>
             </div>
           </section>
         </div>
@@ -814,6 +897,70 @@
         section.classList.toggle('collapsed');
       });
     });
+
+    (function initCardsMultiSelect() {
+      const root = document.getElementById('cardsSelect');
+      if (!root) return;
+      const trigger = root.querySelector('.multi-select-trigger');
+      const panel = root.querySelector('.multi-select-panel');
+      const inputs = Array.from(root.querySelectorAll('input[type="checkbox"]'));
+
+      function render() {
+        const selected = inputs.filter((input) => input.checked).map((input) => input.value);
+        trigger.innerHTML = '';
+        if (!selected.length) {
+          const placeholder = document.createElement('span');
+          placeholder.className = 'multi-select-placeholder';
+          placeholder.textContent = 'Please select...';
+          trigger.appendChild(placeholder);
+          return;
+        }
+        selected.forEach((value) => {
+          const tag = document.createElement('span');
+          tag.className = 'multi-select-tag';
+          const label = document.createElement('span');
+          label.textContent = value;
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.setAttribute('aria-label', 'Remove ' + value);
+          remove.textContent = '×';
+          remove.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const match = inputs.find((input) => input.value === value);
+            if (match) {
+              match.checked = false;
+              render();
+            }
+          });
+          tag.appendChild(label);
+          tag.appendChild(remove);
+          trigger.appendChild(tag);
+        });
+      }
+
+      function setOpen(open) {
+        root.classList.toggle('open', open);
+        trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+
+      trigger.addEventListener('click', () => {
+        setOpen(!root.classList.contains('open'));
+      });
+
+      inputs.forEach((input) => {
+        input.addEventListener('change', render);
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!root.contains(event.target)) setOpen(false);
+      });
+
+      panel.addEventListener('click', (event) => {
+        event.stopPropagation();
+      });
+
+      render();
+    })();
   </script>
 </body>
 </html>
