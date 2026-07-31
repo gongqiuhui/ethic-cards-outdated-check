@@ -388,6 +388,7 @@
     }
     .icon-btn:hover { color: var(--primary); background: #f5f5f5; }
     .icon-btn svg { width: 16px; height: 16px; display: block; }
+    .open-drawer-btn.is-hidden { display: none; }
 
     .toast-stack {
       position: absolute;
@@ -935,17 +936,29 @@
       if (cardsField) cardsField.classList.toggle('disabled', disabled);
     }
 
+    function setOutdatedCheckVisible(visible) {
+      document.querySelectorAll('.open-drawer-btn').forEach((btn) => {
+        btn.classList.toggle('is-hidden', !visible);
+      });
+    }
+
+    function applyStatusTab(status) {
+      const isPendingOutdated = status === 'pending-outdated';
+      setCardsFilterDisabled(isPendingOutdated);
+      setOutdatedCheckVisible(isPendingOutdated);
+    }
+
     document.querySelectorAll('#statusTabs .chip').forEach((chip) => {
       chip.addEventListener('click', () => {
         document.querySelectorAll('#statusTabs .chip').forEach((item) => {
           item.classList.remove('active');
         });
         chip.classList.add('active');
-        setCardsFilterDisabled(chip.getAttribute('data-status') === 'pending-outdated');
+        applyStatusTab(chip.getAttribute('data-status'));
       });
     });
 
-    setCardsFilterDisabled(false);
+    applyStatusTab('all');
 
     retainBtn.addEventListener('click', () => {
       closeDrawer();
