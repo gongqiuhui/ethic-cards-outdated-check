@@ -365,7 +365,7 @@
     }
     .card-dot.red { background: #f5222d; }
     .card-dot.orange { background: #fa8c16; }
-    .card-dot.green { background: #52c41a; color: #fff; }
+    .card-dot.blue { background: #1890ff; color: #fff; }
     .reason-red { color: var(--danger); }
     .icon-actions {
       display: flex;
@@ -684,7 +684,7 @@
                     <label class="multi-select-option"><input type="checkbox" value="Ethic Red Card" />Ethic Red Card</label>
                     <label class="multi-select-option"><input type="checkbox" value="Ethic Gray Card" />Ethic Gray Card</label>
                     <label class="multi-select-option"><input type="checkbox" value="Ethics Red Card (Escalated from Yellow)" />Ethics Red Card (Escalated from Yellow)</label>
-                    <label class="multi-select-option"><input type="checkbox" value="Ethics Green Card（Outdated）" />Ethics Green Card（Outdated）</label>
+                    <label class="multi-select-option"><input type="checkbox" value="Ethics Outdated Card" />Ethics Outdated Card</label>
                   </div>
                 </div>
               </div>
@@ -893,14 +893,14 @@
     const outdatedBtn = document.getElementById('outdatedBtn');
     const drawerFooter = document.getElementById('drawerFooter');
     const toastStack = document.getElementById('toastStack');
-    let isGreenCardFilterApplied = false;
+    let isOutdatedCardFilterApplied = false;
 
     function setDrawerActionsVisible(visible) {
       if (drawerFooter) drawerFooter.classList.toggle('is-hidden', !visible);
     }
 
     function openDrawer() {
-      setDrawerActionsVisible(!isGreenCardFilterApplied);
+      setDrawerActionsVisible(!isOutdatedCardFilterApplied);
       drawer.classList.remove('hidden');
       mask.classList.remove('hidden');
       mask.setAttribute('aria-hidden', 'false');
@@ -936,7 +936,7 @@
 
     document.querySelectorAll('.edit-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
-        if (!isGreenCardFilterApplied) return;
+        if (!isOutdatedCardFilterApplied) return;
         const params = new URLSearchParams({
           name: btn.getAttribute('data-name') || '',
           email: btn.getAttribute('data-email') || '',
@@ -978,7 +978,7 @@
 
     function syncOutdatedCheckVisibility() {
       setOutdatedCheckVisible(
-        getActiveStatus() === 'pending-outdated' || isGreenCardFilterApplied
+        getActiveStatus() === 'pending-outdated' && !isOutdatedCardFilterApplied
       );
     }
 
@@ -1025,7 +1025,7 @@
       const inputs = Array.from(root.querySelectorAll('input[type="checkbox"]'));
       const searchBtn = document.getElementById('searchBtn');
       const resetBtn = document.getElementById('resetBtn');
-      const outdatedValue = 'Ethics Green Card（Outdated）';
+      const outdatedValue = 'Ethics Outdated Card';
 
       function getSelected() {
         return inputs.filter((input) => input.checked).map((input) => input.value);
@@ -1035,15 +1035,15 @@
         const showOutdated = selected.includes(outdatedValue);
         document.querySelectorAll('.card-dot').forEach((dot) => {
           const original = dot.getAttribute('data-original-color') || 'red';
-          dot.classList.remove('red', 'orange', 'green');
-          dot.classList.add(showOutdated ? 'green' : original);
+          dot.classList.remove('red', 'orange', 'blue');
+          dot.classList.add(showOutdated ? 'blue' : original);
         });
       }
 
       function restoreCardStyles() {
         document.querySelectorAll('.card-dot').forEach((dot) => {
           const original = dot.getAttribute('data-original-color') || 'red';
-          dot.classList.remove('red', 'orange', 'green');
+          dot.classList.remove('red', 'orange', 'blue');
           dot.classList.add(original);
         });
       }
@@ -1097,7 +1097,7 @@
       if (searchBtn) {
         searchBtn.addEventListener('click', () => {
           const selected = getSelected();
-          isGreenCardFilterApplied = selected.includes(outdatedValue);
+          isOutdatedCardFilterApplied = selected.includes(outdatedValue);
           applyOutdatedCardStyles(selected);
           syncOutdatedCheckVisibility();
         });
@@ -1110,7 +1110,7 @@
           });
           render();
           restoreCardStyles();
-          isGreenCardFilterApplied = false;
+          isOutdatedCardFilterApplied = false;
           setDrawerActionsVisible(true);
           syncOutdatedCheckVisibility();
         });
