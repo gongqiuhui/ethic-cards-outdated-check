@@ -181,6 +181,26 @@
     .field.span-2 { grid-column: span 2; }
     .field textarea { height: 64px; resize: none; }
 
+    .status-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .chip {
+      border: 1px solid var(--border);
+      background: var(--white);
+      padding: 4px 12px;
+      border-radius: 2px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .chip.active {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
     .multi-select {
       position: relative;
       width: 100%;
@@ -611,6 +631,11 @@
 
         <div class="content">
           <div class="card">
+            <div class="status-row" id="statusTabs">
+              <span class="chip active" data-status="all">All (1000)</span>
+              <span class="chip" data-status="pending-outdated">Pending outdated (100)</span>
+            </div>
+
             <div class="filters">
               <div class="field">
                 <label>Email</label>
@@ -643,22 +668,14 @@
                   </div>
                 </div>
               </div>
-              <div class="field">
-                <label>Pending Outdated</label>
-                <select>
-                  <option>Please select...</option>
-                  <option>Yes</option>
-                  <option>No</option>
-                </select>
-              </div>
               <div class="field span-2">
                 <label>Reason</label>
                 <textarea readonly>Please input...</textarea>
               </div>
             </div>
             <div class="actions-row">
-              <button class="btn btn-primary" type="button">Search</button>
-              <button class="btn btn-default" type="button">Reset</button>
+              <button class="btn btn-primary" type="button" id="searchBtn">Search</button>
+              <button class="btn btn-default" type="button" id="resetBtn">Reset</button>
             </div>
 
             <div class="table-toolbar">
@@ -882,6 +899,15 @@
     closeBtn.addEventListener('click', closeDrawer);
     mask.addEventListener('click', closeDrawer);
 
+    document.querySelectorAll('#statusTabs .chip').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#statusTabs .chip').forEach((item) => {
+          item.classList.remove('active');
+        });
+        chip.classList.add('active');
+      });
+    });
+
     retainBtn.addEventListener('click', () => {
       closeDrawer();
       showToast('The scholar Retain Ethic Cards successfully');
@@ -905,7 +931,13 @@
       const trigger = root.querySelector('.multi-select-trigger');
       const panel = root.querySelector('.multi-select-panel');
       const inputs = Array.from(root.querySelectorAll('input[type="checkbox"]'));
+      const searchBtn = document.getElementById('searchBtn');
+      const resetBtn = document.getElementById('resetBtn');
       const outdatedValue = 'Ethics Green Card（Outdated）';
+
+      function getSelected() {
+        return inputs.filter((input) => input.checked).map((input) => input.value);
+      }
 
       function applyOutdatedCardStyles(selected) {
         const showOutdated = selected.includes(outdatedValue);
@@ -916,38 +948,45 @@
         });
       }
 
+      function restoreCardStyles() {
+        document.querySelectorAll('.card-dot').forEach((dot) => {
+          const original = dot.getAttribute('data-original-color') || 'red';
+          dot.classList.remove('red', 'orange', 'green');
+          dot.classList.add(original);
+        });
+      }
+
       function render() {
-        const selected = inputs.filter((input) => input.checked).map((input) => input.value);
+        const selected = getSelected();
         trigger.innerHTML = '';
         if (!selected.length) {
           const placeholder = document.createElement('span');
           placeholder.className = 'multi-select-placeholder';
           placeholder.textContent = 'Please select...';
           trigger.appendChild(placeholder);
-        } else {
-          selected.forEach((value) => {
-            const tag = document.createElement('span');
-            tag.className = 'multi-select-tag';
-            const label = document.createElement('span');
-            label.textContent = value;
-            const remove = document.createElement('button');
-            remove.type = 'button';
-            remove.setAttribute('aria-label', 'Remove ' + value);
-            remove.textContent = '×';
-            remove.addEventListener('click', (event) => {
-              event.stopPropagation();
-              const match = inputs.find((input) => input.value === value);
-              if (match) {
-                match.checked = false;
-                render();
-              }
-            });
-            tag.appendChild(label);
-            tag.appendChild(remove);
-            trigger.appendChild(tag);
-          });
+          return;
         }
-        applyOutdatedCardStyles(selected);
+        selected.forEach((value) => {
+          const tag = document.createElement('span');
+          tag.className = 'multi-select-tag';
+          const label = document.createElement('span');
+          label.textContent = value;
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.setAttribute('aria-label', 'Remove ' + value);
+          remove.textContent = '×';
+          remove.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const match = inputs.find((input) => input.value === value);
+            if (match) {
+              match.checked = false;
+              render();
+            }
+          });
+          tag.appendChild(label);
+          tag.appendChild(remove);
+          trigger.appendChild(tag);
+        });
       }
 
       function setOpen(open) {
@@ -962,6 +1001,22 @@
       inputs.forEach((input) => {
         input.addEventListener('change', render);
       });
+
+      if (searchBtn) {
+        searchBtn.addEventListener('click', () => {
+          applyOutdatedCardStyles(getSelected());
+        });
+      }
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inputs.forEach((input) => {
+            input.checked = false;
+          });
+          render();
+          restoreCardStyles();
+        });
+      }
 
       document.addEventListener('click', (event) => {
         if (!root.contains(event.target)) setOpen(false);
