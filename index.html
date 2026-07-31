@@ -205,6 +205,24 @@
       position: relative;
       width: 100%;
     }
+    .multi-select.disabled {
+      pointer-events: none;
+      opacity: 1;
+    }
+    .multi-select.disabled .multi-select-trigger {
+      background-color: #f5f5f5;
+      color: rgba(0, 0, 0, 0.25);
+      cursor: not-allowed;
+      border-color: #d9d9d9;
+      box-shadow: none;
+    }
+    .multi-select.disabled .multi-select-placeholder,
+    .multi-select.disabled .multi-select-tag {
+      color: rgba(0, 0, 0, 0.25);
+    }
+    .field.disabled label {
+      color: rgba(0, 0, 0, 0.25);
+    }
     .multi-select-trigger {
       min-height: 32px;
       width: 100%;
@@ -653,7 +671,7 @@
                 <label>Created Date</label>
                 <input value="Start date  →  End date" readonly />
               </div>
-              <div class="field span-2">
+              <div class="field span-2" id="cardsField">
                 <label>Cards</label>
                 <div class="multi-select" id="cardsSelect">
                   <div class="multi-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox">
@@ -899,14 +917,35 @@
     closeBtn.addEventListener('click', closeDrawer);
     mask.addEventListener('click', closeDrawer);
 
+    function setCardsFilterDisabled(disabled) {
+      const cardsField = document.getElementById('cardsField');
+      const cardsSelect = document.getElementById('cardsSelect');
+      if (!cardsSelect) return;
+      cardsSelect.classList.toggle('disabled', disabled);
+      cardsSelect.classList.remove('open');
+      const trigger = cardsSelect.querySelector('.multi-select-trigger');
+      if (trigger) {
+        trigger.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+        trigger.setAttribute('tabindex', disabled ? '-1' : '0');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+      cardsSelect.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+        input.disabled = disabled;
+      });
+      if (cardsField) cardsField.classList.toggle('disabled', disabled);
+    }
+
     document.querySelectorAll('#statusTabs .chip').forEach((chip) => {
       chip.addEventListener('click', () => {
         document.querySelectorAll('#statusTabs .chip').forEach((item) => {
           item.classList.remove('active');
         });
         chip.classList.add('active');
+        setCardsFilterDisabled(chip.getAttribute('data-status') === 'pending-outdated');
       });
     });
+
+    setCardsFilterDisabled(false);
 
     retainBtn.addEventListener('click', () => {
       closeDrawer();
