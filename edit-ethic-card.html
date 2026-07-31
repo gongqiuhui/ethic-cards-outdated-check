@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SuSy — Edit Ethics Card</title>
+  <style>
+    :root {
+      --text: #17304d;
+      --muted: #8c8c8c;
+      --border: #e8e8e8;
+      --bg: #f0f2f5;
+      --white: #ffffff;
+      --primary: #1890ff;
+      --sidebar-w: 232px;
+      --nav-h: 60px;
+      --font: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg);
+      font-size: 14px;
+      line-height: 1.5;
+      overflow: hidden;
+    }
+
+    .app {
+      width: 1440px;
+      height: 900px;
+      margin: 0 auto;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .topnav {
+      height: var(--nav-h);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 28px;
+      flex-shrink: 0;
+      background: var(--white);
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 22px;
+      color: #1a1a1a;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: #52c41a; }
+    .topnav a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .topnav .spacer { flex: 1; }
+    .topnav-search {
+      display: flex;
+      align-items: center;
+      height: 28px;
+      border: 1px solid #d9d9d9;
+      border-radius: 2px;
+      overflow: hidden;
+      background: var(--white);
+    }
+    .topnav-search input {
+      border: none;
+      outline: none;
+      height: 100%;
+      width: 160px;
+      padding: 0 8px;
+      font: inherit;
+      color: var(--muted);
+    }
+    .topnav-search button {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-submit {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 2px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .user { color: var(--muted); font-size: 13px; margin-left: 4px; }
+
+    .body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .sidebar {
+      width: var(--sidebar-w);
+      border-right: 1px solid var(--border);
+      background: var(--white);
+      padding: 8px 0;
+      flex-shrink: 0;
+      overflow: auto;
+    }
+    .menu-label {
+      padding: 8px 16px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .menu-item {
+      padding: 9px 16px;
+      color: var(--text);
+      cursor: default;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .menu-item.active {
+      background: #e6f7ff;
+      color: var(--primary);
+      border-right: 2px solid var(--primary);
+    }
+    .menu-group { margin-top: 4px; }
+    .menu-group > .menu-item.group-title { font-weight: 600; }
+    .badge {
+      background: #f5222d;
+      color: #fff;
+      border-radius: 10px;
+      font-size: 11px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      background: #f0f2f5;
+      overflow: auto;
+      padding: 12px 16px;
+    }
+
+    .page-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 16px 20px 24px;
+      min-height: calc(100% - 4px);
+    }
+
+    .page-top {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+    .back-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .scholar-bar {
+      display: flex;
+      align-items: center;
+      gap: 56px;
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      background: var(--white);
+      margin-bottom: 20px;
+    }
+    .scholar-bar .item {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .scholar-bar .label {
+      font-weight: 700;
+      color: var(--text);
+    }
+    .scholar-bar .value { color: var(--text); }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .section-head h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .btn {
+      height: 32px;
+      padding: 0 15px;
+      border-radius: 2px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      overflow-x: auto;
+      margin-bottom: 28px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+    thead th {
+      background: #fafafa;
+      color: var(--text);
+      font-weight: 600;
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text);
+    }
+    tbody tr:last-child td { border-bottom: none; }
+
+    .card-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .card-dot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 2px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      background: #52c41a;
+      flex-shrink: 0;
+    }
+    .reason-cell {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      min-width: 360px;
+      max-width: 520px;
+    }
+    .notes-cell { color: var(--muted); }
+    .icon-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .icon-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .icon-btn:hover { color: var(--primary); background: #f5f5f5; }
+    .icon-btn.danger { color: #f5222d; }
+    .icon-btn.danger:hover { background: #fff1f0; color: #cf1322; }
+    .icon-btn svg { width: 16px; height: 16px; display: block; }
+
+    .change-log h2 {
+      font-size: 16px;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .change-log .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+    .change-log .empty {
+      text-align: center;
+      color: #bfbfbf;
+      padding: 24px 0 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topnav">
+      <div class="logo">SuSy<span>.</span></div>
+      <a href="#">Journals</a>
+      <a href="#">Topics</a>
+      <a href="#">Information ▾</a>
+      <a href="#">Author Services</a>
+      <a href="#">Initiatives ▾</a>
+      <a href="#">About ▾</a>
+      <div class="spacer"></div>
+      <div class="topnav-search">
+        <input value="Search..." readonly />
+        <button type="button" aria-label="Search">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <circle cx="5" cy="5" r="3.5" stroke="#fff" stroke-width="1.4"/>
+            <path d="M7.8 7.8L10.2 10.2" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <button class="btn-submit" type="button">Submit</button>
+      <span class="user">qiuhui.gong@mdpi.com ▾</span>
+    </header>
+
+    <div class="body">
+      <aside class="sidebar">
+        <div class="menu-label">Financial</div>
+        <div class="menu-item">Journal Invoices</div>
+        <div class="menu-item">Billing Report</div>
+        <div class="menu-item">
+          <span>Proceedings Invoices</span>
+          <span class="badge">17</span>
+        </div>
+
+        <div class="menu-group">
+          <div class="menu-item group-title">Publisher Office</div>
+          <div class="menu-item">Check Published Papers</div>
+          <div class="menu-item active">Manage Scholars</div>
+          <div class="menu-item">Manuscript Approvals</div>
+          <div class="menu-item">Special Issue</div>
+          <div class="menu-item">English Edit</div>
+        </div>
+
+        <div class="menu-group">
+          <div class="menu-item group-title">Comms &amp; Marketing</div>
+          <div class="menu-item">Quick find sponsorship</div>
+          <div class="menu-item">EIC Travel Grants</div>
+          <div class="menu-item">Journal Awards</div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="page-card">
+          <div class="page-top">
+            <a class="back-link" href="index.html">← Back to Scholar List</a>
+          </div>
+
+          <div class="scholar-bar">
+            <div class="item">
+              <span class="label">Title:</span>
+              <span class="value" id="scholarTitle">Dr.</span>
+            </div>
+            <div class="item">
+              <span class="label">Name:</span>
+              <span class="value" id="scholarName">—</span>
+            </div>
+            <div class="item">
+              <span class="label">Email:</span>
+              <span class="value" id="scholarEmail">—</span>
+            </div>
+          </div>
+
+          <div class="section-head">
+            <h2>Ethics Cards</h2>
+            <button class="btn btn-primary" type="button">
+              <span aria-hidden="true">+</span> Add Ethics Cards
+            </button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Card</th>
+                  <th>Reason</th>
+                  <th>Notes</th>
+                  <th>Created Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="card-cell">
+                      <span class="card-dot">1</span>
+                      <span>Ethics Green Card（Outdated）</span>
+                    </div>
+                  </td>
+                  <td class="reason-cell" id="reasonCell"></td>
+                  <td class="notes-cell">—</td>
+                  <td id="createdCell">—</td>
+                  <td>
+                    <div class="icon-actions">
+                      <button class="icon-btn" type="button" aria-label="View" title="View">
+                        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                          <path d="M3 3.5h7.5L13 6v6.5H3V3.5z" stroke="currentColor" stroke-width="1.3"/>
+                          <path d="M10.5 3.5V6H13" stroke="currentColor" stroke-width="1.3"/>
+                        </svg>
+                      </button>
+                      <button class="icon-btn" type="button" aria-label="Edit" title="Edit">
+                        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                          <path d="M11.5 2.5l2 2L5 13H3v-2L11.5 2.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                        </svg>
+                      </button>
+                      <button class="icon-btn danger" type="button" aria-label="Delete" title="Delete">
+                        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                          <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/>
+                          <path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <section class="change-log">
+            <h2>Change Log</h2>
+            <hr class="divider" />
+            <div class="empty">No change logs available</div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    function formatDisplayDate(raw) {
+      if (!raw) return '6 February 2021';
+      const parts = String(raw).split('-');
+      if (parts.length !== 3) return raw;
+      const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      const year = parts[0];
+      const month = months[Number(parts[1]) - 1] || parts[1];
+      const day = String(Number(parts[2]));
+      return day + ' ' + month + ' ' + year;
+    }
+
+    function formatCreatedDate(raw) {
+      if (!raw) return '23 Jul 2026, 11:21:29';
+      const parts = String(raw).split('-');
+      if (parts.length !== 3) return raw;
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const month = months[Number(parts[1]) - 1] || parts[1];
+      return Number(parts[2]) + ' ' + month + ' ' + parts[0] + ', 11:21:29';
+    }
+
+    function buildReason(date, reason) {
+      const displayDate = formatDisplayDate(date);
+      const originalReason = reason || '—';
+      return [
+        'The Ethics Card(s) below have been marked as outdated due to the passage of time:',
+        '• Ethics yellow card added to this scholar on ' + displayDate + '. Original reason: ' + originalReason,
+        '• Ethics red card added to this scholar on ' + displayDate + '. Original reason: ' + originalReason
+      ].join('\n');
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('name') || 'Gazy Fghh';
+    const email = params.get('email') || 'gzojyfjqmh@gmail.com';
+    const date = params.get('date') || '2021-02-06';
+    const reason = params.get('reason') || 'AI writing';
+
+    document.getElementById('scholarName').textContent = name;
+    document.getElementById('scholarEmail').textContent = email;
+    document.getElementById('createdCell').textContent = formatCreatedDate(date);
+    document.getElementById('reasonCell').textContent = buildReason(date, reason);
+  </script>
+</body>
+</html>
